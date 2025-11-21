@@ -74,7 +74,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ trades, currentDate, setCur
   const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full pb-20 lg:pb-0">
       {/* Calendar Header */}
       <div className="flex items-center justify-between mb-4 p-2">
         <div className="flex gap-2">
@@ -86,7 +86,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ trades, currentDate, setCur
             </button>
         </div>
 
-        <h2 className="text-xl font-bold text-slate-100">
+        <h2 className="text-lg lg:text-xl font-bold text-slate-100">
           {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
         </h2>
 
@@ -101,43 +101,46 @@ const CalendarView: React.FC<CalendarViewProps> = ({ trades, currentDate, setCur
       </div>
 
       {/* Days Header */}
-      <div className="grid grid-cols-7 gap-2 mb-2 text-center text-slate-400 text-sm font-medium">
+      <div className="grid grid-cols-7 gap-1 lg:gap-2 mb-2 text-center text-slate-400 text-[10px] lg:text-sm font-medium uppercase">
         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => (
           <div key={d} className="py-2">{d}</div>
         ))}
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-7 grid-rows-6 gap-2 flex-1 min-h-0">
+      <div className="grid grid-cols-7 grid-rows-6 gap-1 lg:gap-2 flex-1 min-h-0">
         {calendarDays.map((day, idx) => (
           <div 
             key={idx}
             className={`
-              relative rounded-xl p-2 border flex flex-col justify-between transition-colors group cursor-pointer
+              relative rounded-lg lg:rounded-xl p-1 lg:p-2 border flex flex-col justify-between transition-colors group cursor-pointer
               ${day.isCurrentMonth ? 'bg-[#1e293b] border-slate-700/50' : 'bg-slate-900/50 border-transparent opacity-40'}
               ${day.isCurrentMonth ? 'hover:border-slate-500 hover:bg-slate-800' : ''}
             `}
           >
-            <span className={`text-sm font-medium ${day.isCurrentMonth ? 'text-slate-300' : 'text-slate-600'}`}>
+            <span className={`text-xs lg:text-sm font-medium ${day.isCurrentMonth ? 'text-slate-300' : 'text-slate-600'}`}>
               {day.date.getDate()}
             </span>
 
             {day.dailyPnL !== 0 && (
               <div className="flex flex-col items-end">
-                <span className={`text-sm font-bold ${day.dailyPnL > 0 ? 'text-green-400' : 'text-red-400'}`}>
-                  {day.dailyPnL > 0 ? '+' : ''}{day.dailyPnL.toFixed(2)}
+                <span className={`text-[10px] lg:text-sm font-bold leading-tight ${day.dailyPnL > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                  {day.dailyPnL > 0 ? '+' : ''}{Math.abs(day.dailyPnL).toFixed(0)}
                 </span>
-                <span className="text-[10px] text-slate-500">
+                <span className="hidden lg:block text-[10px] text-slate-500">
                     {day.trades.length} Trades
                 </span>
               </div>
             )}
 
             {/* Indicator dots for trades */}
-            <div className="absolute bottom-2 left-2 flex gap-1">
+            <div className="absolute bottom-1 lg:bottom-2 left-1 lg:left-2 flex gap-0.5 lg:gap-1">
                 {day.trades.slice(0, 4).map((t, i) => (
-                    <div key={i} className={`w-1.5 h-1.5 rounded-full ${t.pnl && t.pnl > 0 ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                    <div key={i} className={`w-1 h-1 lg:w-1.5 lg:h-1.5 rounded-full ${t.pnl && t.pnl > 0 ? 'bg-green-500' : 'bg-red-500'}`}></div>
                 ))}
+                {day.trades.length > 4 && (
+                    <div className="w-1 h-1 lg:w-1.5 lg:h-1.5 rounded-full bg-slate-500"></div>
+                )}
             </div>
           </div>
         ))}
