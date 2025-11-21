@@ -92,8 +92,8 @@ const App: React.FC = () => {
   return (
     <div className="flex h-screen w-full bg-[#0f172a] text-slate-200 font-sans overflow-hidden selection:bg-blue-500/30">
       
-      {/* Sidebar */}
-      <aside className="w-64 flex-shrink-0 border-r border-slate-800 bg-[#0f172a] flex flex-col">
+      {/* Desktop Sidebar (Hidden on Mobile) */}
+      <aside className="hidden md:flex w-64 flex-shrink-0 border-r border-slate-800 bg-[#0f172a] flex-col">
         {/* Logo Area */}
         <div className="h-16 flex items-center px-6 border-b border-slate-800">
             <div className="w-8 h-8 bg-blue-600 rounded-lg mr-3 flex items-center justify-center">
@@ -105,7 +105,7 @@ const App: React.FC = () => {
         {/* Account Info */}
         <div className="p-6">
             <div className="bg-slate-900 rounded-xl p-4 border border-slate-800 shadow-lg relative group">
-                {/* Edit Button - NOW ALWAYS VISIBLE */}
+                {/* Edit Button */}
                 <button 
                     onClick={() => setIsAccountModalOpen(true)}
                     className="absolute top-2 right-2 p-1.5 text-slate-500 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-md transition-all z-10"
@@ -182,13 +182,30 @@ const App: React.FC = () => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+      <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative mb-16 md:mb-0">
         {/* Top Bar */}
-        <header className="h-16 border-b border-slate-800 flex items-center justify-between px-8 bg-[#0f172a]">
-            <h1 className="text-xl font-semibold text-white">
-                {currentView === 'calendar' ? 'Trading Journal' : currentView.charAt(0).toUpperCase() + currentView.slice(1)}
-            </h1>
+        <header className="h-16 border-b border-slate-800 flex items-center justify-between px-4 md:px-8 bg-[#0f172a]">
+            <div className="flex items-center gap-3">
+                {/* Mobile Logo */}
+                <div className="md:hidden w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                    <BarChart3 className="text-white w-5 h-5" />
+                </div>
+                <h1 className="text-lg md:text-xl font-semibold text-white">
+                    {currentView === 'calendar' ? 'Trading Journal' : currentView.charAt(0).toUpperCase() + currentView.slice(1)}
+                </h1>
+            </div>
             <div className="flex items-center gap-4">
+                 {/* Mobile Account Summary (Mini) */}
+                 <div className="md:hidden flex flex-col items-end mr-2" onClick={() => setIsAccountModalOpen(true)}>
+                    <span className="text-xs font-bold text-white">
+                        {account.currency === 'USD' ? '$' : account.currency}
+                        {(account.balance + monthlyStats.netPnL).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                    </span>
+                    <span className={`text-[10px] ${monthlyStats.netPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                         {monthlyStats.netPnL >= 0 ? '+' : ''}{Math.abs(monthlyStats.netPnL).toFixed(0)}
+                    </span>
+                 </div>
+
                 <div className="w-8 h-8 rounded-full bg-slate-700 border border-slate-600 overflow-hidden">
                     <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Trader" alt="Avatar" className="w-full h-full" />
                 </div>
@@ -198,7 +215,7 @@ const App: React.FC = () => {
         {/* Content Area */}
         <div className="flex-1 overflow-hidden flex">
             {/* Center Stage */}
-            <div className="flex-1 overflow-y-auto p-8">
+            <div className="flex-1 overflow-y-auto p-4 md:p-8 pb-24 md:pb-8">
                 {currentView === 'calendar' && (
                     <div className="h-full flex flex-col">
                         <CalendarView 
@@ -225,7 +242,7 @@ const App: React.FC = () => {
                 )}
             </div>
 
-            {/* Right Panel: Summary & AI */}
+            {/* Right Panel: Summary & AI (Desktop Only) */}
             <aside className="w-80 border-l border-slate-800 bg-[#0f172a] p-6 overflow-y-auto hidden xl:block">
                 <h3 className="text-sm uppercase tracking-wider text-slate-500 font-bold mb-6">Monthly Summary</h3>
                 
@@ -287,6 +304,68 @@ const App: React.FC = () => {
                 </div>
             </aside>
         </div>
+
+        {/* Mobile Bottom Navigation */}
+        <div className="md:hidden fixed bottom-0 left-0 right-0 bg-[#0f172a] border-t border-slate-800 px-6 py-3 flex justify-between items-center z-40 safe-area-pb">
+            <button 
+                onClick={() => setCurrentView('dashboard')}
+                className={`flex flex-col items-center gap-1 ${currentView === 'dashboard' ? 'text-blue-500' : 'text-slate-500'}`}
+            >
+                <LayoutDashboard className="w-6 h-6" />
+                <span className="text-[10px] font-medium">Home</span>
+            </button>
+            <button 
+                onClick={() => setCurrentView('calendar')}
+                className={`flex flex-col items-center gap-1 ${currentView === 'calendar' ? 'text-blue-500' : 'text-slate-500'}`}
+            >
+                <Calendar className="w-6 h-6" />
+                <span className="text-[10px] font-medium">Journal</span>
+            </button>
+            
+            {/* Floating Add Button for Mobile */}
+            <div className="relative -top-6">
+                <button 
+                    onClick={() => setIsTradeModalOpen(true)}
+                    className="w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-lg shadow-blue-600/30 border-4 border-[#0f172a]"
+                >
+                    <Plus className="w-8 h-8" />
+                </button>
+            </div>
+
+            <button 
+                onClick={() => setCurrentView('stats')}
+                className={`flex flex-col items-center gap-1 ${currentView === 'stats' ? 'text-blue-500' : 'text-slate-500'}`}
+            >
+                <BarChart3 className="w-6 h-6" />
+                <span className="text-[10px] font-medium">Stats</span>
+            </button>
+            <button 
+                onClick={() => handleAIAnalysis()} // Mobile AI Trigger
+                className={`flex flex-col items-center gap-1 ${isAnalyzing ? 'text-purple-400 animate-pulse' : 'text-slate-500'}`}
+            >
+                <BrainCircuit className="w-6 h-6" />
+                <span className="text-[10px] font-medium">AI Coach</span>
+            </button>
+        </div>
+
+        {/* Mobile AI Result Modal (Simple Overlay) */}
+        {aiAnalysis && (
+            <div className="xl:hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+                <div className="bg-slate-800 w-full max-w-md rounded-2xl max-h-[80vh] flex flex-col">
+                    <div className="p-4 border-b border-slate-700 flex justify-between items-center">
+                        <h3 className="font-bold text-white flex items-center gap-2">
+                            <BrainCircuit className="w-5 h-5 text-purple-400" />
+                            AI Coach Analysis
+                        </h3>
+                        <button onClick={() => setAiAnalysis(null)} className="text-slate-400 hover:text-white">✕</button>
+                    </div>
+                    <div className="p-4 overflow-y-auto">
+                        <pre className="whitespace-pre-wrap font-sans text-sm text-slate-300">{aiAnalysis}</pre>
+                    </div>
+                </div>
+            </div>
+        )}
+
       </main>
 
       <TradeModal 
