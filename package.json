@@ -1,9 +1,9 @@
 {
   "name": "tpfx-journal",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "scripts": {
-    "preinstall": "rm -rf package-lock.json node_modules",
+    "preinstall": "npx rimraf package-lock.json node_modules",
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview"
@@ -11,7 +11,7 @@
   "dependencies": {
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "@google/genai": "^0.1.2"
+    "@google/genai": "latest"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",
